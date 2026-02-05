@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somesh Shanbhag | Business Analyst</title>
+    <!-- Frameworks & Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Stable Framer Motion CDN (UMD Build) -->
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        html { scroll-behavior: smooth; font-family: 'Inter', sans-serif; }
+        body { background-color: #0f172a; margin: 0; overflow-x: hidden; color: white; -webkit-font-smoothing: antialiased; }
+        
+        .font-hand { font-family: 'Caveat', cursive; }
+        .font-calligraphy { font-family: 'Great Vibes', cursive; }
+        .font-editorial { font-family: 'Playfair Display', serif; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        
+        .input-glass { 
+            background: rgba(255, 255, 255, 0.05) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+            outline: none; 
+            appearance: none;
+        }
+        
+        .input-glass:focus { 
+            border-color: #38bdf8 !important; 
+            background: rgba(255, 255, 255, 0.08) !important; 
+        }
+
+        .glow-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: pulse-glow 8s infinite ease-in-out;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes gradient-x {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+            animation: gradient-x 8s ease infinite;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        * { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useRef } = React;
+        const MotionLib = window.Motion || { motion: { div: 'div' }, useScroll: () => ({ scrollYProgress: { on: () => {} } }), useTransform: () => {}, useSpring: () => {} };
+        const { motion, AnimatePresence, useScroll, useTransform, useSpring } = MotionLib;
+
+        const EMAILJS_CONFIG = {
+            SERVICE_ID: "YOUR_SERVICE_ID",
+            TEMPLATE_ID: "YOUR_TEMPLATE_ID",
+            PUBLIC_KEY: "YOUR_PUBLIC_KEY"
+        };
+
+        // Updated Reveal to accept ID for scrolling
+        const Reveal = ({ children, delay = 0, width = "100%", id }) => (
+            <motion.div
+                id={id}
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ delay }}
+                style={{ width }}
+            >
+                {children}
+            </motion.div>
+        );
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const WritingText = ({ text, delay = 0, className = "" }) => {
+            const words = text.split(" ");
+            const container = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: delay } } };
+            const child = { hidden: { opacity: 0, x: -5, rotate: -2 }, visible: { opacity: 1, x: 0, rotate: 0, transition: { type: "spring", damping: 10, stiffness: 80 } } };
+
+            return (
+                <motion.div className={`flex flex-wrap ${className}`} variants={container} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+                    {words.map((word, index) => (
+                        <div key={index} className="flex whitespace-pre mr-3 lg:mr-5 last:mr-0">
+                            {word.split("").map((letter, i) => (
+                                <motion.span key={i} variants={child} className="inline-block origin-bottom">{letter}</motion.span>
+                            ))}
+                        </div>
+                    ))}
+                </motion.div>
+            );
+        };
+
+        // NEW: Rotating Word Component for Footer
+        const RotatingWord = () => {
+            const words = ["Vision", "Milestone", "Strategy", "Victory", "Challenge"];
+            const [index, setIndex] = useState(0);
+
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    setIndex((prev) => (prev + 1) % words.length);
+                }, 2500); 
+                return () => clearTimeout(timer);
+            }, [index]);
+
+            return (
+                <span className="inline-grid relative h-[1.3em] overflow-hidden align-baseline mx-2 min-w-[3ch]">
+                     <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                            key={words[index]}
+                            initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
+                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                            exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
+                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                            className="block whitespace-nowrap italic text-sky-400 col-start-1 row-start-1"
+                        >
+                            {words[index]}.
+                        </motion.span>
+                    </AnimatePresence>
+                    <span className="invisible col-start-1 row-start-1">{words[index]}.</span>
+                </span>
+            );
+        };
+
+        const AnimatedCheck = () => (
+            <div className="p-8 glass rounded-2xl border-l-4 border-emerald-500 bg-slate-800/40 relative overflow-hidden group">
+                <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700"></div>
+                <div className="flex items-center gap-6 relative z-10">
+                    <div className="relative w-16 h-16 flex items-center justify-center flex-shrink-0">
+                        <motion.svg className="w-full h-full text-emerald-400" viewBox="0 0 52 52">
+                            <motion.circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" strokeWidth="2" initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.6, ease: "easeInOut" }} viewport={{ once: true }} />
+                            <motion.path fill="none" stroke="currentColor" strokeWidth="3" d="M14.1 27.2l7.1 7.2 16.7-16.8" initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }} viewport={{ once: true }} />
+                        </motion.svg>
+                    </div>
+                    <div>
+                        <motion.h5 initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.9, duration: 0.5 }} viewport={{ once: true }} className="font-bold text-white text-2xl mb-2">UAT Approved</motion.h5>
+                        <div className="space-y-1">
+                            {["Sanity Checks Complete", "Regression Testing Passed", "Stakeholder Sign-off", "Production Greenlight"].map((check, i) => (
+                                <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 1.1 + (i * 0.1), duration: 0.5 }} viewport={{ once: true }} className="text-xs md:text-sm text-slate-400 flex items-center gap-2">
+                                    <Icon name="check" size={12} className="text-emerald-500" />{check}
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // Updated ProjectCard to accept ID for navigation targets
+        const ProjectCard = ({ project, index, onOpen, id }) => {
+            return (
+                <Reveal key={index} delay={index * 0.05} id={id}>
+                    <motion.div 
+                        whileHover={{ y: -5 }}
+                        className="p-6 glass rounded-2xl flex flex-col h-full border border-white/5 hover:border-sky-500/30 transition-all min-w-[85vw] sm:min-w-[350px] md:min-w-[380px] snap-center group relative bg-slate-800/20"
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="p-2 bg-slate-800 rounded-lg text-sky-400 group-hover:text-white group-hover:bg-sky-500 transition-colors"><Icon name={project.icon || "database"} size={20}/></div>
+                            <div className={`py-1 px-2.5 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center justify-center ${project.status === 'Complete' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (project.status === 'In Progress' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20')}`}>
+                                {project.status}
+                            </div>
+                        </div>
+                        <div className="min-h-[3rem] flex items-start mb-2">
+                            <h3 className="text-xl font-bold text-white group-hover:text-sky-400 transition-colors leading-tight line-clamp-2">{project.title}</h3>
+                        </div>
+                        <p className="text-slate-400 text-sm mb-6 leading-relaxed line-clamp-3 min-h-[4.5rem]">{project.desc}</p>
+                        <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+                            {project.tech.slice(0, 3).map(t => <span key={t} className="text-[10px] font-medium text-slate-400 bg-slate-800/50 px-2 py-1 rounded border border-white/5">{t}</span>)}
+                            {project.tech.length > 3 && <span className="text-[10px] font-medium text-slate-500 py-1 px-1">+{project.tech.length - 3}</span>}
+                        </div>
+                        <div className="flex gap-3 mt-auto pt-4 border-t border-white/5">
+                            <button onClick={() => onOpen(project)} className="flex-1 py-2.5 bg-slate-800 hover:bg-sky-600 hover:text-white text-slate-300 text-xs font-bold rounded-lg transition-all border border-white/10 flex items-center justify-center gap-2">
+                                <Icon name="eye" size={14}/> View Project
+                            </button>
+                            <a href={project.repoLink} target="_blank" className="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg transition-colors border border-white/5" title="View Code">
+                                <Icon name="github" size={16}/>
+                            </a>
+                        </div>
+                    </motion.div>
+                </Reveal>
+            );
+        };
+
+        const App = () => {
+            const [activeStage, setActiveStage] = useState(0);
+            const [formStatus, setFormStatus] = useState('idle');
+            const [videoOpen, setVideoOpen] = useState(false);
+            const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+            const [selectedProject, setSelectedProject] = useState(null);
+
+            // Lock body scroll when modal is open
+            useEffect(() => {
+                if (videoOpen || selectedImageIndex !== null || selectedProject !== null) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'unset';
+                }
+                return () => { document.body.style.overflow = 'unset'; };
+            }, [videoOpen, selectedImageIndex, selectedProject]);
+
+            const { scrollYProgress } = useScroll();
+            const smoothProgress = useSpring(scrollYProgress || 0, { stiffness: 100, damping: 30 });
+            const formRef = useRef();
+
+            // UPDATED: Gallery Images now include descriptions
+            const galleryImages = [
+                { src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Collaborating with the design team to align the new dashboard UI with stakeholder requirements. This session was crucial for the Jubilee Scorecard project." },
+                { src: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Leading a daily stand-up meeting during the Project Catalyst rollout. Ensuring cross-functional alignment between IT and Logistics was key to our 18% cycle reduction." },
+                { src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Presenting the final RentSmart ROI analysis to potential investors. The data visualization helped secure buy-in for the pilot portfolio." },
+                { src: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Deep dive session into the legacy data structures for the RiskGuard project. Identifying the class imbalances here saved us weeks of model retraining later." },
+                { src: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Analyzing user session recordings in Microsoft Clarity to understand drop-off points. This directly influenced the 40% reduction in rework at BallrHub." },
+                { src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", description: "Celebrating the successful deployment of the EcoSolvency model. It was a proud moment seeing our climate risk data finally integrating with live mortgage assessments." }
+            ];
+
+            const projects = [
+                { 
+                    title: "Jubilee Scorecard", 
+                    status: "Complete", 
+                    tech: ["Requirement Elicitation", "PowerBI", "Stakeholder Management", "Gap Analysis"], 
+                    desc: "Modernized corporate strategy by aligning financial tracking with Indigenous data sovereignty principles to reveal hidden market stagnation.", 
+                    repoLink: "#", 
+                    icon: "bar-chart-2", 
+                    summary: { 
+                        question: <>A retail enterprise required a total modernization of its corporate strategy because legacy financial tracking failed to explain a <span className="text-white font-bold">multi-year plateau</span> in market reach. The business lacked visibility into non-financial social impacts.</>,
+                        challenge: <>Leading the <span className="text-white font-bold">Requirements Elicitation</span> phase to align Indigenous data sovereignty principles with corporate KPI reporting. Designed a sophisticated <span className="text-white font-bold">PowerBI dashboard suite</span> to interrogate over 1000 transaction records.</>,
+                        outcome: <>Identified a critical <span className="text-white font-bold">strategic blind spot</span>: zero new customer growth over a four-year period. This finding prompted an immediate shift toward a <span className="text-white font-bold">socially responsible governance model</span>.</> 
+                    } 
+                },
+                { 
+                    title: "CapitalPivot", 
+                    status: "Complete", 
+                    tech: ["Financial Modelling", "Real Options", "Excel", "Cost-Benefit Analysis"], 
+                    desc: "Reversed a $13.2M investment rejection by modelling real options and management flexibility to prove a positive NPV of $1.73M.", 
+                    repoLink: "#", 
+                    icon: "trending-up", 
+                    summary: { 
+                        question: <>A travel company was on the verge of rejecting a <span className="text-white font-bold">$13.2M luxury boat investment</span> because traditional accounting models predicted a loss in a volatile market.</>,
+                        challenge: <>Conducted a deep <span className="text-white font-bold">Gap Analysis</span> between static financial reporting and dynamic market reality. Modelled the <span className="text-white font-bold">Option to Abandon</span> using real options theory to account for management flexibility.</>,
+                        outcome: <>The investment decision was reversed with a <span className="text-white font-bold">positive NPV of $1.73M</span> and an <span className="text-white font-bold">IRR of 16.51%</span>, proving that flexibility is a measurable financial asset.</> 
+                    } 
+                },
+                { 
+                    title: "RentSmart", 
+                    status: "Complete", 
+                    tech: ["Agile & Scrum", "Spatial Analysis", "Automation", "BPMN"], 
+                    desc: "Designed an end-to-end analytical solution automating 10,000+ property listings to identify high-yield undervalued rental corridors.", 
+                    repoLink: "#", 
+                    icon: "home", 
+                    summary: { 
+                        question: <>A fragmented urban rental market made it impossible for investors to identify <span className="text-white font-bold">high-yield opportunities</span> due to a lack of longitudinal price clarity.</>,
+                        challenge: <>Executed <span className="text-white font-bold">Product Ownership</span> of an analytical solution automating the ingestion/cleaning of <span className="text-white font-bold">10,000+ property listings</span> utilizing spatial analysis and a predictive ROI engine.</>,
+                        outcome: <>Achieved a <span className="text-white font-bold">12% increase</span> in projected annual yield for pilot portfolios. Identified three specific high-growth corridors that were <span className="text-white font-bold">statistically undervalued</span>.</> 
+                    } 
+                },
+                { 
+                    title: "RiskGuard", 
+                    status: "Complete", 
+                    tech: ["Technical Documentation", "Machine Learning", "PCA", "Python", "SQL"], 
+                    desc: "Engineered a predictive liquidity protection system using Gradient Boosting to identify delinquency patterns in a 30,000 account database.", 
+                    repoLink: "#", 
+                    icon: "shield-check", 
+                    summary: { 
+                        question: <>A financial institution faced capital risk because legacy systems failed to identify <span className="text-white font-bold">delinquency patterns</span> within a 30,000 account database.</>,
+                        challenge: <>Performed <span className="text-white font-bold">Requirements Mapping</span> and Business Process Reengineering. Utilized <span className="text-white font-bold">SMOTE</span> for class imbalances and <span className="text-white font-bold">PCA</span> to condense technical debt into actionable risk pillars.</>,
+                        outcome: <>Risk mitigation enhanced with a <span className="text-white font-bold">Recall boost to 0.59</span> and <span className="text-white font-bold">ROC AUC of 0.7653</span> using a Gradient Boosting engine.</> 
+                    } 
+                },
+                { 
+                    title: "TrustLogic", 
+                    status: "Complete", 
+                    tech: ["Regression Modeling", "UX Research", "Survey Design", "User Stories"], 
+                    desc: "Validated that ease of use predicts repeat business better than raw feature density through regression modeling of 101 respondents.", 
+                    repoLink: "#", 
+                    icon: "users", 
+                    summary: { 
+                        question: <>A global delivery platform assumed that <span className="text-white font-bold">more features</span> always led to higher loyalty despite seeing a steady drop in customer advocacy.</>,
+                        challenge: <>Conducted <span className="text-white font-bold">Qualitative and Quantitative Research</span> (101 respondents). Used regression modeling to identify how digital trust and perceived ease of use interact.</>,
+                        outcome: <>Optimized customer loyalty by proving <span className="text-white font-bold">ease of use</span> is a stronger predictor of repeat business than raw functional performance, leading to interface simplification.</> 
+                    } 
+                },
+                { 
+                    title: "EcoSolvency", 
+                    status: "Complete", 
+                    tech: ["Data Synthesis", "Time Series Analysis", "Risk Modelling"], 
+                    desc: "Priced climate risk into mortgage portfolios by merging 15 years of US Census data with regional drought records to identify insolvency drivers.", 
+                    repoLink: "#", 
+                    icon: "cloud-rain", 
+                    summary: { 
+                        question: <>Banks traditionally ignore the relationship between <span className="text-white font-bold">environmental volatility</span> and long-term borrower solvency, creating a blind spot in mortgage portfolios.</>,
+                        challenge: <>Executed <span className="text-white font-bold">Cross-Domain Data Synthesis</span> by merging 15 years of US Census data with monthly drought severity records. Interpolated yearly income growth into a quarterly time series.</>,
+                        outcome: <>Validated a correlation between <span className="text-white font-bold">drought severity</span> and <span className="text-white font-bold">mortgage default</span> in agricultural regions, proving climate is a primary driver of insolvency.</> 
+                    } 
+                },
+                { 
+                    title: "RetailDuel", 
+                    status: "Complete", 
+                    tech: ["Financial Analysis", "Competitor Benchmarking", "Strategic Audit"], 
+                    desc: "Decomposed drivers of ROE for Coles vs Woolworths using DuPont analysis to validate operational resilience during high inflation.", 
+                    repoLink: "#", 
+                    icon: "shopping-bag", 
+                    summary: { 
+                        question: <>A leading ASX-listed retailer required a comprehensive <span className="text-white font-bold">financial diagnostic</span> to evaluate its market position against its primary competitor.</>,
+                        challenge: <>Performed detailed <span className="text-white font-bold">Benchmarking</span> and vertical analysis using <span className="text-white font-bold">DuPont analysis</span>, profitability, and liquidity ratios during high inflationary volatility.</>,
+                        outcome: <>Identified significant performance divergence: Coles maintained a stable <span className="text-white font-bold">32.07% ROE</span> while the rival plunged, validating superior operational resilience.</> 
+                    } 
+                },
+                { 
+                    title: "PivotPoint", 
+                    status: "Complete", 
+                    tech: ["Cost-Benefit Analysis", "Operational Modelling", "Accounting"], 
+                    desc: "Calculated new break-even points and operational thresholds for a restaurant facing 50% capacity reduction to ensure solvency.", 
+                    repoLink: "#", 
+                    icon: "utensils", 
+                    summary: { 
+                        question: <>A restaurant faced a critical profitability crisis following regulations that reduced <span className="text-white font-bold">seating capacity by 50%</span>.</>,
+                        challenge: <>Conducted a management accounting audit using <span className="text-white font-bold">linear regression</span> to isolate fixed costs and <span className="text-white font-bold">CVP modeling</span> to evaluate special order pricing.</>,
+                        outcome: <>Identified a new quarterly <span className="text-white font-bold">break-even point of 6425 customers</span> and provided precise quantitative thresholds for the operational pivot.</> 
+                    } 
+                },
+                { 
+                    title: "TradeInterrogation", 
+                    status: "Complete", 
+                    tech: ["Data Visualization", "Trend Analysis", "Tableau", "Data Storytelling"], 
+                    desc: "Analyzed 35 years of trade data to identify structural economic weaknesses and forecast multi-billion dollar deficits in iron and steel.", 
+                    repoLink: "#", 
+                    icon: "globe", 
+                    summary: { 
+                        question: <>Public policy stakeholders required a comprehensive understanding of <span className="text-white font-bold">35 years of trade data</span> to identify structural economic weaknesses.</>,
+                        challenge: <>Creating complex statistical patterns in Excel/Tableau using ABS trade records. Focused on <span className="text-white font-bold">Trend Identification</span> to isolate major change points.</>,
+                        outcome: <>Identified a widening trade deficit in iron/steel projected to reach <span className="text-white font-bold">$5,272 million</span>, providing the quantitative case for domestic investment.</> 
+                    } 
+                },
+                { 
+                    title: "LuxeMetrics", 
+                    status: "Complete", 
+                    tech: ["Data Warehousing", "SAS", "Data Pipelines"], 
+                    desc: "Engineered an automated SAS pipeline to align inventory with purchase velocity, reducing overstocking risks for a jewellery brand.", 
+                    repoLink: "#", 
+                    icon: "gem", 
+                    summary: { 
+                        question: <>A retail jewellery brand lacked the operational visibility needed to manage stock, facing <span className="text-white font-bold">overstocking risks</span> and revenue loss.</>,
+                        challenge: <>Engineering an automated <span className="text-white font-bold">SAS data pipeline</span> to perform multi-source merging and categorical mapping for Strategic Auditing.</>,
+                        outcome: <>Inventory efficiency increased (R² 0.87), realigning stock to the <span className="text-white font-bold">$18-34 sweet spot</span> where 60% of all customer volume occurred.</> 
+                    } 
+                },
+                { 
+                    title: "MarketArbitrage", 
+                    status: "Complete", 
+                    tech: ["Market Analysis", "Regression Modelling", "Valuation"], 
+                    desc: "Built a regression-based valuation framework from 2,000 sales records to capture high-margin used car opportunities and prevent overpayment.", 
+                    repoLink: "#", 
+                    icon: "car", 
+                    summary: { 
+                        question: <>A used car enterprise experienced profit leakage because sellers were listing vehicles at <span className="text-white font-bold">undervalued rates</span>.</>,
+                        challenge: <>Analyzing 2,000+ sales records to build a <span className="text-white font-bold">regression-based valuation framework</span>. Isolated the exact business value of specific attributes.</>,
+                        outcome: <>Optimized acquisition precision by identifying a value drop of <span className="text-white font-bold">1.68 INR per km</span> and premiums for hybrid types, maximizing resale margins.</> 
+                    } 
+                },
+                { 
+                    title: "Smart Eyewear", 
+                    status: "Complete", 
+                    tech: ["Market Segmentation", "Conjoint Analysis", "Product Strategy"], 
+                    desc: "Defined product tiers for AI AR glasses using fractional orthogonal conjoint design and persona clustering to optimize market entry.", 
+                    repoLink: "#", 
+                    icon: "eye", 
+                    summary: { 
+                        question: <>Required a data-backed strategy to launch AI-powered AR glasses into a competitive market without <span className="text-white font-bold">unnecessary production costs</span>.</>,
+                        challenge: <>Utilized <span className="text-white font-bold">fractional orthogonal conjoint design</span> and cluster analysis on 60 respondents to group consumers and perform Perceptual Mapping.</>,
+                        outcome: <>Optimized product-market fit by developing three distinct product tiers based on a <span className="text-white font-bold">0.87 R² preference prediction</span>.</> 
+                    } 
+                },
+                { 
+                    title: "EdTech Growth", 
+                    status: "Complete", 
+                    tech: ["Demand Forecasting", "Pricing Strategy", "Competitive Analysis"], 
+                    desc: "Predicted online education demand using analytics simulation to avoid failed market launch and validate premium pricing strategies.", 
+                    repoLink: "#", 
+                    icon: "book-open", 
+                    summary: { 
+                        question: <>A web development enterprise required a strategy to enter the online education market and <span className="text-white font-bold">predict demand</span>.</>,
+                        challenge: <>Comprehensive analytics simulation using historical data. Utilized <span className="text-white font-bold">linear regression</span> and <span className="text-white font-bold">log-log demand functions</span> to isolate price elasticity.</>,
+                        outcome: <>Provided a roadmap for success identifying <span className="text-white font-bold">low price sensitivity</span>, allowing for premium rates on high-quality beginner content.</> 
+                    } 
+                },
+                { 
+                    title: "RetentionAudit", 
+                    status: "Complete", 
+                    tech: ["Churn Analysis", "Customer Journey Mapping", "Root Cause Analysis"], 
+                    desc: "Isolated bottlenecks driving customers to competitors for an organic grocery retailer using a 6-point churn diagnostic framework.", 
+                    repoLink: "#", 
+                    icon: "refresh-cw", 
+                    summary: { 
+                        question: <>An organic grocery retailer suffered from a 12-month decline in <span className="text-white font-bold">customer loyalty</span> without knowing if the friction was pricing or experience.</>,
+                        challenge: <>Utilized a <span className="text-white font-bold">6-point analytical framework</span> to map conversion rate drop-offs against specific technical friction points on the digital storefront.</>,
+                        outcome: <>Improved revenue stability by isolating exactly where customers were losing interest, leading to automated <span className="text-white font-bold">re-engagement triggers</span>.</> 
+                    } 
+                },
+                { 
+                    title: "CreditShield", 
+                    status: "Complete", 
+                    tech: ["UAT Coordination", "Risk Assessment", "Debt Coverage"], 
+                    desc: "Standardized loan reviews with a Compliance Framework to prevent legal violations and validate debt ratios for institutional lending.", 
+                    repoLink: "#", 
+                    icon: "file-check", 
+                    summary: { 
+                        question: <>Manual loan reviews were prone to human error, exposing the bank to <span className="text-white font-bold">legal violations</span> and financial risk.</>,
+                        challenge: <>Acting as lead reviewer using a standardized <span className="text-white font-bold">Debt Service Coverage framework</span> to ensure data and policy alignment.</>,
+                        outcome: <>Avoided legal risk by rejecting non-compliant applicants and secured high-value loans by validating a compliant <span className="text-white font-bold">34.78% debt ratio</span>.</> 
+                    } 
+                },
+                { 
+                    title: "Digital Hospitality", 
+                    status: "Complete", 
+                    tech: ["Customer Experience (CX)", "Journey Mapping", "CRM Strategy"], 
+                    desc: "Mapped the digital dining journey using the 5Cs framework to identify friction points preventing recurring loyalty in hospitality.", 
+                    repoLink: "#", 
+                    icon: "coffee", 
+                    summary: { 
+                        question: <>Hospitality venues faced <span className="text-white font-bold">operational bottlenecks</span> and a lack of insight into diner behavior during peak sittings.</>,
+                        challenge: <>Utilized the <span className="text-white font-bold">5Cs framework</span> to analyze market positioning. Created detailed customer personas and mapped every digital touchpoint.</>,
+                        outcome: <>Optimized three critical journey friction points. Validated that integrating <span className="text-white font-bold">digital ordering with CRM insights</span> strengthens patron relationships.</> 
+                    } 
+                },
+                { 
+                    title: "Telecom Intelligence", 
+                    status: "Complete", 
+                    tech: ["Strategic Analysis", "Market Research", "SWOT"], 
+                    desc: "Interrogated market share dynamics for a telco incumbent using Porter’s Five Forces to maintain dominance against pricing wars.", 
+                    repoLink: "#", 
+                    icon: "signal", 
+                    summary: { 
+                        question: <>The Australian telecommunications sector is a high-barrier market where incumbents face intense pressure from <span className="text-white font-bold">pricing wars</span>.</>,
+                        challenge: <>Analysis using <span className="text-white font-bold">Porter’s Five Forces</span> and <span className="text-white font-bold">SWOT frameworks</span> to evaluate performance against industry benchmarks and ANZSIC classifications.</>,
+                        outcome: <>Validated strategic positioning, identifying <span className="text-white font-bold">infrastructure superiority</span> as a critical buffer against price elasticity proving that the 22.5 million mobile users remain the primary revenue anchor despite aggressive competitor discounting.</> 
+                    } 
+                },
+                { 
+                    title: "EduPulse", 
+                    status: "Complete", 
+                    tech: ["Educational Data Mining", "Correlation Analysis", "Performance Mgmt"], 
+                    desc: "Shifted strategy from raw study hours to attendance as a success predictor by processing a 5,000 record student dataset.", 
+                    repoLink: "#", 
+                    icon: "book", 
+                    summary: { 
+                        question: <>Academic institutions wasted resources on ineffective tutoring programs based on the assumption that <span className="text-white font-bold">raw study hours</span> drive success.</>,
+                        challenge: <>Processing a <span className="text-white font-bold">5,000 record dataset</span> to find real drivers of performance through correlation analysis and identifying behavioral clusters.</>,
+                        outcome: <>Invalidated the study time assumption (0.03 correlation). Proved <span className="text-white font-bold">stress levels</span> and <span className="text-white font-bold">attendance</span> are the true predictors.</> 
+                    } 
+                },
+                { 
+                    title: "Policy Equilibrium", 
+                    status: "Complete", 
+                    tech: ["Economic Modeling", "Comparative Statics"], 
+                    desc: "Evaluated policy responses to the health insurance death spiral using economic modeling to recommend a hybrid subsidy approach.", 
+                    repoLink: "#", 
+                    icon: "heart-pulse", 
+                    summary: { 
+                        question: <>The Australian private health insurance market faced a potential <span className="text-white font-bold">death spiral</span> due to declining participation among younger individuals which placed upward pressure on premiums. The business needed an economic model to evaluate government policy responses and their impact on long term market sustainability.</>,
+                        challenge: <>The project involved an empirical investigation of industry trends using primary data from the APRA. The methodology utilized comparative statics and supply demand equilibrium models to evaluate policy responses including age based subsidies and Medicare Levy Surcharge adjustments to identify the most effective lever for Risk Pool Stabilization.</>,
+                        outcome: <>The analysis delivered a strategic recommendation for a hybrid policy approach as measured by the identified shifts in market participation across different income brackets. The study proved that lowering the Medicare Levy Surcharge threshold is a high impact lever for high income earners while supply side reforms are essential to structurally lowering premiums for the broader population.</> 
+                    } 
+                },
+                { 
+                    title: "EquityTrade", 
+                    status: "Complete", 
+                    tech: ["Technical Analysis", "Investment Strategy", "Data Simulation"], 
+                    desc: "Optimized entry/exit strategy for Vulcan Steel in a volatile market using daily stock data simulations to maximize short-term returns.", 
+                    repoLink: "#", 
+                    icon: "trending-up", 
+                    summary: { 
+                        question: <>An investor required a data-driven assessment to determine the most profitable strategy in a <span className="text-white font-bold">volatile industrial market</span>.</>,
+                        challenge: <>Processing daily stock data to build visual analytical models. Simulated three investment scenarios ranging from <span className="text-white font-bold">long-term holding</span> to <span className="text-white font-bold">high-frequency rotation</span>.</>,
+                        outcome: <>Optimized portfolio performance with a <span className="text-white font-bold">50% higher return</span> in the multiple trade scenario compared to a single trade strategy for the 2024 period. The analysis proved that in a declining market short term capital rotation is a superior generator of value than long term exposure which provided a precise roadmap for strategic timing.</> 
+                    } 
+                },
+                { 
+                    title: "TennisTrends", 
+                    status: "Complete", 
+                    tech: ["Visual Analytics", "Tableau", "Historical Analysis"], 
+                    desc: "Charted 120 years of Australian Open evolution to track player endurance and match formats using high-dimensional visualization.", 
+                    repoLink: "#", 
+                    icon: "trophy", 
+                    summary: { 
+                        question: <>The Australian Open required a data-driven framework to communicate over <span className="text-white font-bold">120 years</span> of tournament evolution.</>,
+                        challenge: <>Transforming a massive historical dataset (1905-2024) into an interactive <span className="text-white font-bold">Tableau workbook</span> using parallel coordinates and treemaps.</>,
+                        outcome: <>Identified a strategic <span className="text-white font-bold">endurance differential</span> between match formats and charted the success of elite champions across demographics.</> 
+                    } 
+                },
+                { 
+                    title: "Project Catalyst", 
+                    status: "In Progress", 
+                    tech: ["Solution Architecture", "Process Modelling", "Data Streaming"], 
+                    desc: "Bridging the gap between static inventory and real-time demand to reduce working capital stagnation and improve delivery timelines.", 
+                    repoLink: "#", 
+                    icon: "layers", 
+                    summary: { 
+                        question: <>An active development project focused on bridging the gap between static inventory reporting and <span className="text-white font-bold">real-time demand fluctuations</span> to reduce working capital stagnation.</>,
+                        challenge: <>Designing an <span className="text-white font-bold">end-to-end data streaming system</span> integrating live warehouse telemetry with predictive models. Engineering automated logic to redistribute stock across regional hubs.</>,
+                        outcome: <>Early simulations indicate a projected <span className="text-white font-bold">18% reduction</span> in fulfillment cycles and a <span className="text-white font-bold">10% improvement</span> in working capital efficiency.</> 
+                    } 
+                }
+            ];
+
+            const openLightbox = (index) => setSelectedImageIndex(index);
+            const closeLightbox = () => setSelectedImageIndex(null);
+            const nextImage = (e) => { e.stopPropagation(); setSelectedImageIndex((prev) => (prev + 1) % galleryImages.length); };
+            const prevImage = (e) => { e.stopPropagation(); setSelectedImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length); };
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    const sections = ['initiation', 'discovery', 'analysis', 'deployment', 'hypercare'];
+                    const triggerPoint = window.scrollY + (window.innerHeight * 0.3);
+                    sections.forEach((id, index) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            const { offsetTop, offsetHeight } = element;
+                            if (triggerPoint >= offsetTop && triggerPoint < offsetTop + offsetHeight) setActiveStage(index);
+                        }
+                    });
+                };
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                handleScroll();
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const handleContact = (e) => {
+                e.preventDefault();
+                setFormStatus('sending');
+                setTimeout(() => { setFormStatus('success'); formRef.current.reset(); setTimeout(() => setFormStatus('idle'), 5000); }, 1500);
+            };
+
+            const scrollTo = (id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const elementRect = el.getBoundingClientRect();
+                    const absoluteElementTop = elementRect.top + window.scrollY;
+                    const offsetPosition = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+                    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                }
+            };
+            const heroOpacity = useTransform ? useTransform(scrollYProgress, [0, 0.5], [1, 0]) : 1;
+
+            // NEW: Handler for clicking Core Competency Tags with Cinematic Scroll
+            const handleTagClick = (tag) => {
+                const index = projects.findIndex(p => p.tech.includes(tag));
+                if (index !== -1) {
+                    const project = projects[index];
+                    const carousel = document.getElementById('projects-carousel');
+                    const cardID = `project-card-${index}`;
+                    const card = document.getElementById(cardID);
+
+                    // 1. Scroll Window to Carousel (Vertical)
+                    // If carousel is found, scroll to center it
+                    if (carousel) {
+                         const carouselRect = carousel.getBoundingClientRect();
+                         const scrollTop = window.scrollY + carouselRect.top - (window.innerHeight / 2) + (carouselRect.height / 2);
+                         window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+                    }
+
+                    // 2. Wait for vertical scroll, then Scroll Carousel (Horizontal)
+                    setTimeout(() => {
+                         if (carousel && card) {
+                            // Calculate center position
+                            // offsetLeft is relative to the scroll container's content start
+                            const scrollLeft = card.offsetLeft - (carousel.clientWidth / 2) + (card.clientWidth / 2);
+                            carousel.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                         }
+                         
+                         // 3. Wait for horizontal scroll, then Open Modal
+                         setTimeout(() => {
+                            setSelectedProject(project);
+                         }, 600); // Wait for horizontal scroll
+                    }, 800); // Wait for vertical scroll
+                }
+            };
+
+            return (
+                <div className="antialiased font-sans text-slate-200">
+                    <AnimatePresence>
+                        {videoOpen && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-10" onClick={() => setVideoOpen(false)}>
+                                <div className="relative w-full max-w-5xl aspect-video bg-black rounded-lg overflow-hidden border border-white/10 shadow-2xl" onClick={e => e.stopPropagation()}>
+                                    
+                                    {/* UPDATED: YouTube Iframe for Professional Streaming */}
+                                    {/* REPLACE 'YOUR_VIDEO_ID' below with your actual YouTube Video ID (e.g., dQw4w9WgXcQ) */}
+                                    <iframe 
+                                        className="w-full h-full"
+                                        src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&rel=0&modestbranding=1" 
+                                        title="Intro Video"
+                                        frameBorder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowFullScreen
+                                    ></iframe>
+
+                                    <button onClick={() => setVideoOpen(false)} className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"><Icon name="x" size={24} /></button>
+                                </div>
+                            </motion.div>
+                        )}
+                        
+                        {selectedProject && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setSelectedProject(null)}>
+                                <button onClick={(e) => { e.stopPropagation(); const currIdx = projects.findIndex(p => p.title === selectedProject.title); const prevIdx = (currIdx - 1 + projects.length) % projects.length; setSelectedProject(projects[prevIdx]); }} className="fixed left-4 md:left-8 top-1/2 -translate-y-1/2 z-[210] p-3 md:p-4 bg-black/50 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors border border-white/10 group hidden md:block"><Icon name="chevron-left" size={32} className="group-hover:-translate-x-1 transition-transform"/></button>
+                                <button onClick={(e) => { e.stopPropagation(); const currIdx = projects.findIndex(p => p.title === selectedProject.title); const nextIdx = (currIdx + 1) % projects.length; setSelectedProject(projects[nextIdx]); }} className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-[210] p-3 md:p-4 bg-black/50 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors border border-white/10 group hidden md:block"><Icon name="chevron-right" size={32} className="group-hover:translate-x-1 transition-transform"/></button>
+                                <div className="md:hidden fixed bottom-6 left-0 right-0 flex justify-center gap-4 z-[210] pointer-events-none">
+                                    <button onClick={(e) => { e.stopPropagation(); const currIdx = projects.findIndex(p => p.title === selectedProject.title); const prevIdx = (currIdx - 1 + projects.length) % projects.length; setSelectedProject(projects[prevIdx]); }} className="pointer-events-auto p-3 bg-black/70 hover:bg-white/20 rounded-full text-white backdrop-blur-md border border-white/10 shadow-xl"><Icon name="chevron-left" size={24}/></button>
+                                    <button onClick={(e) => { e.stopPropagation(); const currIdx = projects.findIndex(p => p.title === selectedProject.title); const nextIdx = (currIdx + 1) % projects.length; setSelectedProject(projects[nextIdx]); }} className="pointer-events-auto p-3 bg-black/70 hover:bg-white/20 rounded-full text-white backdrop-blur-md border border-white/10 shadow-xl"><Icon name="chevron-right" size={24}/></button>
+                                </div>
+                                <motion.div key={selectedProject.title} initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }} transition={{ duration: 0.3, ease: "easeOut" }} className="relative w-full max-w-2xl bg-[#0f172a] rounded-2xl border border-white/10 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                                    <div className="p-6 md:p-8 border-b border-white/5 bg-slate-800/50 flex justify-between items-start">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="p-2 bg-sky-500/10 text-sky-400 rounded-lg"><Icon name={selectedProject.icon} size={20}/></div>
+                                                <div className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded border ${selectedProject.status === 'Complete' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : (selectedProject.status === 'In Progress' ? 'text-amber-400 border-amber-500/20 bg-amber-500/5' : 'text-slate-400 border-slate-500/20 bg-slate-500/5')}`}>{selectedProject.status}</div>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white">{selectedProject.title}</h3>
+                                        </div>
+                                        <button onClick={() => setSelectedProject(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white"><Icon name="x" size={20}/></button>
+                                    </div>
+                                    <div className="p-6 md:p-8 overflow-y-auto space-y-6 custom-scrollbar">
+                                        <p className="text-slate-300 italic text-lg leading-relaxed border-l-4 border-sky-500 pl-4">{selectedProject.desc}</p>
+                                        <div className="space-y-4">
+                                            <div className="p-4 rounded-xl bg-white/5 border border-white/5"><h5 className="text-sky-400 font-bold uppercase text-[10px] tracking-widest mb-2 flex items-center gap-2"><Icon name="help-circle" size={14}/> The Challenge</h5><p className="text-sm text-slate-300 leading-relaxed">{selectedProject.summary.question}</p></div>
+                                            <div className="p-4 rounded-xl bg-white/5 border border-white/5"><h5 className="text-sky-400 font-bold uppercase text-[10px] tracking-widest mb-2 flex items-center gap-2"><Icon name="cpu" size={14}/> The Process</h5><p className="text-sm text-slate-300 leading-relaxed">{selectedProject.summary.challenge}</p></div>
+                                            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-900/20 to-emerald-900/5 border border-emerald-500/20"><h5 className="text-emerald-400 font-bold uppercase text-[10px] tracking-widest mb-2 flex items-center gap-2"><Icon name="check-circle" size={14}/> The Outcome</h5><p className="text-sm text-slate-200 leading-relaxed">{selectedProject.summary.outcome}</p></div>
+                                        </div>
+                                        <div>
+                                            <h5 className="text-slate-500 font-bold text-[10px] uppercase tracking-widest mb-3">Technologies</h5>
+                                            <div className="flex flex-wrap gap-2">{selectedProject.tech.map(t => (<span key={t} className="text-xs font-medium text-slate-300 bg-slate-800 px-3 py-1.5 rounded border border-white/10">{t}</span>))}</div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 border-t border-white/5 bg-slate-800/30 flex justify-end"><a href={selectedProject.repoLink} target="_blank" className="px-6 py-2 bg-white text-slate-900 font-bold rounded-lg hover:bg-sky-50 transition-colors text-sm flex items-center gap-2">View Repository <Icon name="arrow-up-right" size={16}/></a></div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                        
+                        {selectedImageIndex !== null && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4" onClick={closeLightbox}>
+                                <div className="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center group/lightbox">
+                                    <motion.img 
+                                        key={selectedImageIndex} 
+                                        initial={{ opacity: 0, scale: 0.9 }} 
+                                        animate={{ opacity: 1, scale: 1 }} 
+                                        src={galleryImages[selectedImageIndex].src} 
+                                        className="max-w-full max-h-[85vh] object-contain rounded-md shadow-2xl border border-white/10" 
+                                        onClick={e => e.stopPropagation()}
+                                    />
+                                    
+                                    {/* NEW: Description Overlay (Instagram/LinkedIn Style) */}
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="absolute bottom-4 left-4 right-4 md:left-auto md:right-auto md:w-full md:max-w-2xl bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/10 text-slate-200 z-[210] pointer-events-auto"
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        <div className="max-h-[80px] overflow-y-auto custom-scrollbar pr-2">
+                                            <p className="text-sm font-light leading-relaxed">
+                                                <span className="font-bold text-sky-400 mr-2">Memory:</span>
+                                                {galleryImages[selectedImageIndex].description}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+
+                                    <button onClick={closeLightbox} className="fixed top-6 right-6 z-[220] p-3 bg-black/50 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors border border-white/10"><Icon name="x" size={24}/></button>
+                                    <button onClick={prevImage} className="fixed left-4 md:left-8 top-1/2 -translate-y-1/2 z-[220] p-3 md:p-4 bg-black/50 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors border border-white/10 group"><Icon name="chevron-left" size={32} className="group-hover:-translate-x-1 transition-transform"/></button>
+                                    <button onClick={nextImage} className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-[220] p-3 md:p-4 bg-black/50 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors border border-white/10 group"><Icon name="chevron-right" size={32}/></button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* CLEAN NAV */}
+                    <nav className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-[100] bg-[#0f172a]/80 backdrop-blur-md border-b border-white/[0.05]">
+                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => scrollTo('initiation')}>
+                            <div><div className="text-sm font-bold tracking-tight text-white">Somesh Shanbhag</div><div className="text-[10px] text-sky-400 font-medium tracking-wide uppercase">Business Analyst</div></div>
+                        </div>
+                        <div className="hidden md:flex gap-6 text-[11px] font-medium tracking-wide text-slate-400">
+                            {['Initiation', 'Discovery', 'Analysis', 'Deployment', 'Hypercare'].map((p, i) => (<button key={p} onClick={() => scrollTo(p.toLowerCase())} className={`hover:text-white transition-colors ${activeStage === i ? 'text-sky-400' : ''}`}>{p}</button>))}
+                        </div>
+                        <button onClick={() => scrollTo('hypercare')} className="bg-white text-[#0f172a] px-5 py-2 rounded-lg text-[11px] font-bold tracking-wide hover:bg-sky-50 transition-colors">Contact Me</button>
+                    </nav>
+
+                    <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-sky-500 z-[110] origin-left" style={{ scaleX: smoothProgress }} />
+
+                    <main>
+                        {/* HERO: CLARITY IN COMPLEXITY */}
+                        <section id="initiation" className="relative min-h-[100svh] flex items-center overflow-hidden py-20 md:py-0">
+                            <div className="glow-bg absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="w-full max-w-[1400px] mx-auto px-6 md:px-20 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-20 h-full">
+                                <motion.div style={{ opacity: heroOpacity }} className="col-span-1 md:col-span-7 flex flex-col justify-center space-y-6 text-center md:text-left order-1 md:order-1">
+                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }} className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-slate-800 border-2 border-sky-400 text-white text-xs font-bold tracking-wide shadow-[0_0_30px_rgba(56,189,248,0.4)] mb-2 w-fit mx-auto md:mx-0 hover:scale-105 transition-transform cursor-default z-50 mt-28 md:mt-24">
+                                        <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span></span><span className="text-sky-300">Open to Work //</span> 2026
+                                    </motion.div>
+                                    <div className="space-y-0">
+                                        <div className="space-y-2">
+                                            <Reveal delay={0.25}><h2 className="text-lg md:text-2xl font-bold text-white tracking-tight leading-tight">Meet the Product:</h2></Reveal>
+                                            <div className="min-h-[120px] md:min-h-[180px]"><h1 className="font-calligraphy text-7xl sm:text-8xl md:text-9xl lg:text-[9rem] tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-300 to-sky-300 bg-[length:200%_auto] animate-gradient leading-[1.3] py-4 pl-1"><WritingText text="Somesh Shanbhag" delay={0.5} className="justify-center md:justify-start" /></h1></div>
+                                        </div>
+                                    </div>
+                                    <Reveal delay={2.5}>
+                                        <div className="text-sm md:text-base text-slate-300 max-w-xl mx-auto md:mx-0 leading-relaxed font-light space-y-6">
+                                            <p className="text-slate-300">
+                                                My career started at <span className="text-white font-semibold">Capgemini</span> watching elite analysts step into rooms filled with <span className="text-white font-medium">technical chaos</span> and quietly <span className="text-white font-medium">bring them to life</span>. I saw how their presence alone <span className="text-white font-medium">took the weight off</span> a developer's shoulders. That was my <span className="text-sky-400 font-bold">"Initiation."</span> I realized then that I didn't just want to be an analyst, I wanted to be the person who brings that same sense of <span className="text-sky-400 font-bold">reliability and calm</span> to a team.
+                                            </p>
+                                            
+                                            {/* NEW: High Impact Portfolio Statement - Removed 'Let's dive deeper' */}
+                                            <div className="pl-4 border-l-2 border-sky-500/40 space-y-3">
+                                                <p>
+                                                    This portfolio is a <span className="text-white font-medium">living lifecycle</span> where the analyst is the <span className="text-white font-medium">primary product</span>.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Reveal>
+                                    <Reveal delay={2.7}>
+                                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+                                            <button onClick={() => scrollTo('discovery')} className="px-6 py-3 bg-white text-[#0f172a] font-bold rounded-lg hover:bg-sky-50 transition-all flex items-center justify-center gap-2 text-xs md:text-sm shadow-lg shadow-sky-500/10">View My Work <Icon name="arrow-down" size={16}/></button>
+                                            <div className="flex gap-5 items-center justify-center px-4">
+                                                <Icon name="linkedin" size={18} className="text-slate-400 hover:text-white cursor-pointer transition-colors"/><Icon name="github" size={18} className="text-slate-400 hover:text-white cursor-pointer transition-colors"/><Icon name="mail" size={18} className="text-slate-400 hover:text-white cursor-pointer transition-colors"/>
+                                            </div>
+                                        </div>
+                                    </Reveal>
+                                </motion.div>
+                                <div className="col-span-1 md:col-span-5 order-2 md:order-2 flex items-center justify-center md:justify-end h-[50vh] md:h-auto">
+                                    <motion.div initial={{ opacity: 0, x: 50, scale: 0.95 }} animate={{ opacity: 1, x: 0, scale: 1 }} transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }} className="relative w-full max-w-[400px] md:max-w-full aspect-[4/5] md:aspect-[3/4]">
+                                        <div className="absolute -inset-4 bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 rounded-[2.5rem] blur-2xl opacity-75"></div>
+                                        <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-slate-800/30 backdrop-blur-sm">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Somesh Portrait" className="w-full h-full object-cover object-top opacity-90 transition-transform duration-700 hover:scale-105" onError={(e) => { e.target.style.display='none'; }}/>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/80 via-transparent to-transparent pointer-events-none"></div>
+                                        </div>
+                                    </motion.div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* DISCOVERY: THE PITCH */}
+                        <section id="discovery" className="py-24 px-6 md:px-20 bg-slate-800/10 scroll-mt-16">
+                            <div className="max-w-6xl mx-auto space-y-16">
+                                <Reveal><div className="max-w-3xl text-center md:text-left"><h4 className="text-sky-400 font-bold text-xs tracking-widest uppercase mb-4">My Approach</h4><h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">Finding the Friction.</h2></div></Reveal>
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                                    <div className="lg:col-span-5 w-full lg:sticky lg:top-24">
+                                        <Reveal delay={0.2}>
+                                            <div className="glass aspect-video rounded-2xl flex items-center justify-center relative overflow-hidden shadow-xl cursor-pointer hover:border-sky-500/30 transition-colors group w-full" onClick={() => setVideoOpen(true)}>
+                                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black shadow-lg z-10 group-hover:scale-105 transition-transform"><Icon name="play" size={24} className="ml-1" /></div>
+                                                <div className="absolute bottom-4 text-[10px] uppercase tracking-widest font-bold text-slate-400">Watch Intro (60s)</div>
+                                            </div>
+                                        </Reveal>
+                                        <Reveal delay={0.4}>
+                                            <div className="mt-6">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-2"><Icon name="camera" size={14} className="text-sky-400" /><span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Great Memories</span></div>
+                                                    <div className="text-[10px] text-slate-600 flex items-center gap-1 opacity-70"><span className="hidden sm:inline">Scroll</span> <Icon name="move-horizontal" size={12} /></div>
+                                                </div>
+                                                <div className="flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
+                                                    {galleryImages.map((img, i) => (
+                                                        <div key={i} className="flex-shrink-0 w-[31%] aspect-square rounded-lg overflow-hidden border border-white/5 bg-slate-800/50 group relative cursor-pointer snap-start" onClick={() => openLightbox(i)}>
+                                                            <div className="absolute inset-0 bg-sky-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+                                                            {/* UPDATED: Mapping using img object, referencing img.src */}
+                                                            <img src={img.src} alt="Memory" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"/>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </Reveal>
+                                    </div>
+                                    <div className="lg:col-span-7 space-y-10 pl-0 lg:pl-10">
+                                        <Reveal delay={0.3}>
+                                            <div className="relative pl-6 border-l-2 border-sky-500/30">
+                                                <div className="text-slate-300 text-lg leading-relaxed font-light space-y-2">
+                                                    <p>As I grew, I noticed a recurring pattern. Brilliant ideas were failing not because of bad code, but because of <span className="text-white font-medium">"The Gap."</span> There was a missing bridge between what a business needed and what a developer could actually build.</p>
+                                                    <p>I discovered that the most valuable thing I could offer wasn't just my technical skillset, it was the <span className="text-sky-300 font-medium">clarity</span> that allows everyone else to do their best work. I decided to make <span className="text-white font-semibold">"Clarity"</span> my primary output.</p>
+                                                </div>
+                                            </div>
+                                        </Reveal>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                            <Reveal delay={0.4}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="graduation-cap" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">M.S. Business Analytics</h5><p className="text-sm text-slate-400 italic mt-1">UTS, Sydney</p></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Academic Foundation</p></div></Reveal>
+                                            <Reveal delay={0.5}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="briefcase" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">Associate Consultant</h5><p className="text-sm text-slate-400 italic mt-1">Capgemini</p></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Professional Foundation</p></div></Reveal>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* ANALYSIS: PROJECTS */}
+                        <section id="analysis" className="py-24 px-6 md:px-20 scroll-mt-16">
+                            <div className="max-w-[1400px] mx-auto space-y-12">
+                                <Reveal>
+                                    <div>
+                                        <h4 className="text-sky-400 font-bold text-xs tracking-widest uppercase mb-4">Projects</h4>
+                                        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-10">Learning by Doing.</h2>
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                                            <div className="lg:col-span-7 space-y-8">
+                                                <div className="text-lg leading-loose text-slate-300">
+                                                    <p>
+                                                        <span className="float-left text-7xl font-editorial pr-4 pt-2 leading-none text-sky-400">D</span>
+                                                        uring my tenure at <span className="text-white font-medium">Capgemini</span>, I dedicated myself to identifying exactly what the team needed to succeed. I often volunteered for opportunities that felt beyond my depth. Stepping into that uncertainty was daunting but it forged an unshakeable confidence that no matter what challenge comes my way, I can decode it and <span className="text-white font-medium">find a way through.</span>
+                                                    </p>
+                                                    <p className="mt-6">
+                                                        As I refined my process, I moved beyond just finishing projects to perfecting a system of <span className="text-sky-200 font-medium">communication</span> and <span className="text-sky-200 font-medium">deep-dive investigation</span> that defined my professional reputation.
+                                                    </p>
+                                                </div>
+
+                                                <div className="w-full h-px bg-white/10 my-8"></div>
+
+                                                <div className="space-y-6 text-lg leading-loose text-slate-300">
+                                                    <p>
+                                                        The transition to the Sydney tech scene began at <span className="text-white font-medium">BallrHub</span>, where I served as the interface between developers and leadership. I quickly learned that in a local startup, every hour of engineering time is a <span className="text-white font-medium">high-stakes investment</span>.
+                                                    </p>
+                                                    
+                                                    <div className="my-8 p-6 bg-slate-800/30 border-y border-white/10 relative">
+                                                        <Icon name="quote" size={24} className="text-sky-500 absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0f172a] px-2" />
+                                                        <p className="font-editorial text-xl md:text-2xl text-white text-center italic leading-relaxed">
+                                                            "Early on, I realized that providing undeniable evidence is the only way to truly diagnose root causes and eliminate repetitive rework."
+                                                        </p>
+                                                    </div>
+
+                                                    <p>
+                                                        I improved my process by creating a <span className="text-white font-medium">rigorous testing system</span> with exact reproduction steps and screenshots. To find deeper value, I used <span className="text-white font-medium">Microsoft Clarity</span> to monitor real user movements, highlighting exactly where customers dropped out. This technical clarity took the guesswork out of development, helping the team <span className="text-white font-bold">reduce rework by 40%</span> and catching critical bugs that initial QA missed.
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="pt-6 mt-4">
+                                                    <p className="font-editorial text-2xl text-slate-200 leading-relaxed italic">
+                                                        "Every project and academic milestone was a way to refine my process while learning the tools that can together help bridge the gap and solve the problems that matter."
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="lg:col-span-5 flex flex-col gap-6">
+                                                <div className="p-5 bg-slate-800/40 border border-white/5 rounded-xl flex gap-5 hover:border-sky-500/20 transition-all hover:bg-slate-800/60 group"><div className="mt-1 min-w-[20px] text-emerald-400 group-hover:scale-110 transition-transform"><Icon name="trending-up" size={20} /></div><div className="text-sm leading-relaxed text-slate-400">Increased project velocity by reducing stakeholder back-and-forth by <span className="text-white font-bold">78%</span> through the delivery of high-detail documentation that preemptively resolved follow-up queries.</div></div>
+                                                <div className="p-5 bg-slate-800/40 border border-white/5 rounded-xl flex gap-5 hover:border-sky-500/20 transition-all hover:bg-slate-800/60 group"><div className="mt-1 min-w-[20px] text-sky-400 group-hover:scale-110 transition-transform"><Icon name="users" size={20} /></div><div className="text-sm leading-relaxed text-slate-400">Maintained a <span className="text-white font-bold">96%</span> customer satisfaction rating by distilling complex findings into simple, actionable narratives that empowered stakeholders to make immediate decisions.</div></div>
+                                                <div className="p-5 bg-slate-800/40 border border-white/5 rounded-xl flex gap-5 hover:border-sky-500/20 transition-all hover:bg-slate-800/60 group"><div className="mt-1 min-w-[20px] text-amber-400 group-hover:scale-110 transition-transform"><Icon name="check-circle" size={20} /></div><div className="text-sm leading-relaxed text-slate-400">Optimized incident resolution by <span className="text-white font-bold">38% on average</span> by spearheading inter-team communication and initial investigations, resulting in clear identification of where issues lay and the specific steps needed to close gaps, leading to a significant increase in ticket close rates.</div></div>
+                                                <div className="p-5 bg-slate-800/40 border border-white/5 rounded-xl flex gap-5 hover:border-sky-500/20 transition-all hover:bg-slate-800/60 group"><div className="mt-1 min-w-[20px] text-indigo-400 group-hover:scale-110 transition-transform"><Icon name="award" size={20} /></div><div className="text-sm leading-relaxed text-slate-400">Achieved top-tier academic results (<span className="text-white font-bold">89.12 WAM</span> / <span className="text-white font-bold">6.83/7 CGPA</span>) across all Master's Group assignments and complex projects by implementing professional analytical frameworks, earning consistent faculty commendations for exceptional clarity and technical depth.</div></div>
+                                                
+                                                <div className="mt-auto pt-4 p-6 bg-white/5 rounded-xl border border-white/5">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h5 className="text-sky-400 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
+                                                            <div className="h-[1px] w-4 bg-sky-400/50"></div>
+                                                            Core Competencies
+                                                        </h5>
+                                                        <span className="text-[10px] text-slate-500 flex items-center gap-1 animate-pulse">
+                                                            <Icon name="mouse-pointer-click" size={12} /> Tap to see in action
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {['Stakeholder Management', 'Requirement Elicitation', 'BPMN', 'Process Modelling', 'SQL', 'Tableau', 'Data Storytelling', 'Gap Analysis', 'Agile & Scrum', 'UAT Coordination', 'Technical Documentation', 'Python', 'Cost-Benefit Analysis', 'User Stories'].map(skill => (
+                                                            <button 
+                                                                key={skill} 
+                                                                onClick={() => handleTagClick(skill)}
+                                                                className="px-3 py-1.5 bg-slate-800/80 rounded border border-white/10 text-xs text-slate-300 font-medium hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-300 transition-all cursor-pointer focus:outline-none focus:border-sky-400"
+                                                            >
+                                                                {skill}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-sky-400 font-bold text-xs uppercase tracking-widest mb-4">Some of these can be found below:</p>
+                                    </div>
+                                </Reveal>
+                                
+                                {/* HORIZONTAL SCROLL PROJECTS */}
+                                <div className="relative group">
+                                    <div 
+                                        id="projects-carousel"
+                                        className="flex overflow-x-auto gap-4 md:gap-6 pb-12 pt-6 snap-x snap-mandatory -mx-6 px-6 md:-mx-2 md:px-2 relative"
+                                        style={{ 
+                                            scrollbarWidth: 'thin', 
+                                            scrollbarColor: 'rgba(56,189,248,0.3) rgba(15,23,42,0.5)',
+                                            WebkitOverflowScrolling: 'touch' 
+                                        }}
+                                    >
+                                        {projects.map((p, i) => (
+                                            <ProjectCard key={i} index={i} project={p} onOpen={setSelectedProject} id={`project-card-${i}`} />
+                                        ))}
+                                        <div className="w-1 flex-shrink-0"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* DEPLOYMENT: READINESS */}
+                        <section id="deployment" className="py-24 px-6 md:px-20 scroll-mt-16 bg-slate-800/10">
+                            <div className="max-w-5xl mx-auto space-y-12">
+                                <Reveal><div className="text-center md:text-left"><h4 className="text-sky-400 font-bold text-xs tracking-widest uppercase mb-4">Phase 04 // Go Live</h4><h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white">System Deployed.</h2></div></Reveal>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                                    <Reveal delay={0.2}>
+                                        <div className="space-y-8">
+                                            <div className="relative pl-6 border-l-2 border-emerald-500/30">
+                                                <h5 className="text-emerald-400 font-bold text-[10px] uppercase tracking-widest mb-3">Mission Statement</h5>
+                                                <div className="text-lg text-slate-300 leading-relaxed font-light space-y-4">
+                                                    <p>I’ve built this portfolio to show you exactly how I work. Fueled by a passion for learning, contributing and solving, it represents years of practicing, failing and refining my process with absolute <span className="text-white font-medium">attention to detail</span> so that when I join your team, I can <span className="text-white font-medium">find my footing ASAP.</span></p>
+                                                    <p>I have rigorously pushed myself and trained hard to ensure I can master your local workflows rapidly, minimizing the need for extensive training.</p>
+                                                    <p>I am ready to step in, take the weight off your shoulders and start turning your complex problems into clear paths forward from <span className="text-white font-bold border-b border-emerald-500/50">Day 1.</span></p>
+                                                </div>
+                                            </div>
+                                            <div className="pt-2"><button className="px-8 py-4 bg-white text-[#0f172a] font-bold rounded-lg hover:bg-sky-50 transition-all flex items-center justify-center gap-3 text-sm shadow-lg shadow-white/5 group w-full md:w-auto"><Icon name="download" size={18} className="group-hover:-translate-y-1 transition-transform"/> Download Full Specs (CV)</button></div>
+                                        </div>
+                                    </Reveal>
+                                    <Reveal delay={0.3}><AnimatedCheck /></Reveal>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* HYPERCARE: SUPPORT & CONTACT */}
+                        <section id="hypercare" className="py-24 px-6 md:px-20 scroll-mt-16">
+                            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                                <div className="space-y-8 text-center lg:text-left">
+                                    <Reveal><h4 className="text-sky-400 font-bold text-xs tracking-widest uppercase mb-4">Phase 05 // Hypercare</h4><h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white">Long-Term Value.</h2></Reveal>
+                                    <Reveal delay={0.2}>
+                                        <div className="text-lg text-slate-300 leading-relaxed font-light space-y-6">
+                                            <p>To me, a project isn't a success when it launches. It is a success when it is still working, still being used and still making people's workday easier months later.</p>
+                                            <div className="relative pl-6 border-l-4 border-sky-500 py-2 my-8"><p className="font-editorial text-2xl md:text-3xl text-slate-300 leading-tight">That is <span className="font-bold text-sky-400">Hypercare</span>. It is my <span className="italic text-white">commitment to staying</span> until the value we promised is actually realised.</p></div>
+                                            <p>I am not just looking for a role. I am looking for a team where I can be part of something bigger, contribute to a meaningful mission and push myself to achieve more and be more every single day.</p>
+                                            <div className="pt-8 mt-2">
+                                                <p className="font-editorial text-3xl md:text-4xl text-white leading-tight">
+                                                    Let us start a conversation about your <span className="whitespace-nowrap"><span className="italic text-sky-400">next</span><RotatingWord /></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Reveal>
+                                </div>
+                                <Reveal delay={0.3}>
+                                    <div className="glass p-8 md:p-10 rounded-2xl w-full shadow-2xl">
+                                        <h3 className="text-xl font-bold text-white mb-6">Initiate Support Ticket (Contact)</h3>
+                                        <form ref={formRef} onSubmit={handleContact} className="space-y-5">
+                                            <div><label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wider">Stakeholder Name</label><input type="text" name="user_name" required className="w-full p-3 rounded-lg text-white input-glass text-sm" placeholder="Your Name" /></div>
+                                            <div><label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wider">Communication Node</label><input type="email" name="user_email" required className="w-full p-3 rounded-lg text-white input-glass text-sm" placeholder="email@company.com" /></div>
+                                            <div><label className="text-xs font-bold text-slate-400 block mb-2 uppercase tracking-wider">Issue / Opportunity</label><textarea name="message" required rows="4" className="w-full p-3 rounded-lg text-white input-glass text-sm" placeholder="What challenges can I help you solve that ensure we grow together?"></textarea></div>
+                                            <button type="submit" disabled={formStatus === 'sending'} className="w-full py-4 bg-sky-500 text-white font-bold rounded-lg hover:bg-sky-400 transition-all text-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]">{formStatus === 'sending' ? 'Processing...' : 'Submit Ticket'} <Icon name="send" size={16}/></button>
+                                            <AnimatePresence>{formStatus === 'success' && (<motion.div initial={{opacity:0}} animate={{opacity:1}} className="mt-4 p-3 rounded bg-green-500/10 text-green-400 text-xs font-bold text-center border border-green-500/20">Ticket received. I will respond shortly.</motion.div>)}</AnimatePresence>
+                                        </form>
+                                    </div>
+                                </Reveal>
+                            </div>
+                        </section>
+                    </main>
+
+                    <footer className="py-20 bg-[#020617] border-t border-white/10 relative z-10">
+                        <div className="max-w-[1400px] mx-auto px-6 md:px-20 flex flex-col items-center text-center">
+                            <div className="mb-12">
+                                <div className="font-calligraphy text-6xl md:text-8xl text-sky-400 mb-6">Somesh Shanbhag</div>
+                                <p className="font-editorial text-lg md:text-xl text-slate-400 leading-tight max-w-2xl mx-auto">
+                                    <motion.span initial={{ opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.6 }}>Transforming Data.</motion.span>{" "}
+                                    <motion.span initial={{ opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.8, duration: 0.6 }}>Empowering People.</motion.span>{" "}
+                                    <motion.span initial={{ opacity: 0, y: 5 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 1.4, duration: 0.6 }}>Scaling Value.</motion.span>
+                                </p>
+                            </div>
+                            <div className="mb-12 w-full">
+                                <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-slate-400">
+                                    {['Initiation', 'Discovery', 'Analysis', 'Deployment', 'Hypercare'].map(item => (<button key={item} onClick={() => scrollTo(item.toLowerCase())} className="hover:text-white transition-all duration-300 relative group">{item}<span className="absolute -bottom-1 left-0 w-0 h-px bg-sky-400 transition-all group-hover:w-full"></span></button>))}
+                                </div>
+                            </div>
+                            <div className="mb-16">
+                                <div className="flex gap-6 justify-center">
+                                    <a href="#" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-sky-500 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-sky-500/20"><Icon name="linkedin" size={20}/></a>
+                                    <a href="#" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-sky-500 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-sky-500/20"><Icon name="github" size={20}/></a>
+                                    <a href="#" className="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white hover:bg-sky-500 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-sky-500/20"><Icon name="mail" size={20}/></a>
+                                </div>
+                            </div>
+                            <div className="w-full pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
+                                <p>© 2026 Somesh Shanbhag. All rights reserved.</p>
+                                <button onClick={() => scrollTo('initiation')} className="font-bold text-slate-400 hover:text-sky-400 transition-colors flex items-center gap-2 group">Back to Top <Icon name="arrow-up" size={14} className="group-hover:-translate-y-1 transition-transform"/></button>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
