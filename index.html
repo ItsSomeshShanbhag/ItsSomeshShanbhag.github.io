@@ -15,6 +15,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
+    <!-- Favicon: Professional SS Monogram -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22/><text x=%2250%22 y=%2265%22 fill=%22%2338bdf8%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2255%22 text-anchor=%22middle%22>SS</text></svg>">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
@@ -896,10 +899,12 @@
             const scrollTo = (id) => {
                 const el = document.getElementById(id);
                 if (el) {
-                    const elementRect = el.getBoundingClientRect();
-                    const absoluteElementTop = elementRect.top + window.scrollY;
-                    const offsetPosition = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
-                    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                    // Updated Logic: Scroll to TOP instead of CENTER
+                    // Centering causes tall sections (like Analysis) to cut off the header.
+                    // -80px offset accounts for the fixed navbar height.
+                    const yOffset = -80; 
+                    const y = el.getBoundingClientRect().top + window.scrollY + yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
                 }
             };
             const heroOpacity = useTransform ? useTransform(scrollYProgress, [0, 0.5], [1, 0]) : 1;
@@ -1163,8 +1168,8 @@
                                             </div>
                                         </Reveal>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                            <Reveal delay={0.4}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="graduation-cap" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">M.S. Business Analytics</h5><p className="text-sm text-slate-400 italic mt-1">UTS, Sydney</p><div className="text-[10px] text-emerald-400 font-bold mt-2 bg-emerald-400/10 px-2 py-1 rounded w-fit border border-emerald-400/20">CGPA: 6.83 / 7</div></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Academic Foundation</p></div></Reveal>
-                                            <Reveal delay={0.5}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="briefcase" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">Associate Consultant</h5><p className="text-sm text-slate-400 italic mt-1">Capgemini</p><div className="text-[10px] text-amber-400 font-bold mt-2 bg-amber-400/10 px-2 py-1 rounded w-fit border border-amber-400/20 leading-tight">Promoted x2 in &lt; 3 years for client-recognized impact</div></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Professional Foundation</p></div></Reveal>
+                                            <Reveal delay={0.4}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="graduation-cap" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">M.S. Business Analytics</h5><p className="text-sm text-slate-400 italic mt-1">UTS, Sydney</p><div className="text-[10px] text-amber-400 font-bold mt-2 bg-amber-400/10 px-2 py-1 rounded w-fit border border-amber-400/20">CGPA: 6.83 / 7 <span className="mx-1 opacity-50">|</span> WAM: 89.12</div></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Academic Foundation</p></div></Reveal>
+                                            <Reveal delay={0.5}><div className="p-6 bg-slate-800/40 rounded-xl border border-white/5 h-full flex flex-col hover:border-sky-500/20 transition-colors"><div className="mb-4"><Icon name="briefcase" size={24} className="text-slate-500 mb-2"/><h5 className="font-bold text-lg text-white leading-tight">Associate Consultant</h5><p className="text-sm text-slate-400 italic mt-1">Capgemini</p><div className="text-[10px] text-emerald-400 font-bold mt-2 bg-emerald-400/10 px-2 py-1 rounded w-fit border border-emerald-400/20 leading-tight">Promoted x2 in &lt; 3 years for<br/>client-recognized impact</div></div><p className="text-[10px] text-sky-400 font-bold uppercase tracking-widest mt-auto">Professional Foundation</p></div></Reveal>
                                         </div>
                                     </div>
                                 </div>
